@@ -183,19 +183,17 @@ namespace ScienceCenter.Pages
 
             var date = (itemSelect.DateTransferToCompanyBalance.ToDateTime(TimeOnly.MinValue)).AddYears(itemSelect.StandardServiceLife);
 
-            if (date < DateTime.Now)
-            {
-                statusLong.Background = (Brush)new BrushConverter().ConvertFrom("#E32636");
-                statusLong.Content = "НА СПИСАНИЕ";
-            }
-
             if (date.Year == DateTime.Now.Year)
             {
                 statusLong.Background = (Brush)new BrushConverter().ConvertFrom("#FFA500");
                 statusLong.Content = "СРОК СЛУЖБЫ ИСТЕКАЕТ В ТЕКУЩЕМ ГОДУ";
             }
-
-            if (date >= DateTime.Now)
+            else if (date < DateTime.Now)
+            {
+                statusLong.Background = (Brush)new BrushConverter().ConvertFrom("#E32636");
+                statusLong.Content = "НА СПИСАНИЕ";
+            }
+            else if (date > DateTime.Now)
             {
                 statusLong.Background = base.Background;
                 statusLong.Content = $"СРОК СЛУЖБЫ ДО: {date.ToString("dd. MM. yyyy г.")}";
