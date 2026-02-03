@@ -193,7 +193,7 @@ namespace ScienceCenter.Pages
                 statusLong.Background = (Brush)new BrushConverter().ConvertFrom("#E32636");
                 statusLong.Content = "НА СПИСАНИЕ";
             }
-            else if (date > DateTime.Now)
+            else
             {
                 statusLong.Background = base.Background;
                 statusLong.Content = $"СРОК СЛУЖБЫ ДО: {date.ToString("dd. MM. yyyy г.")}";
