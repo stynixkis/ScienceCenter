@@ -1,0 +1,51 @@
+﻿<Page x:Class="ScienceCenter.Pages.ListEquipmentPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ScienceCenter.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ListEquipmentPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+
+        <Label Content="СПИСОК ОБОРУДОВАНИЯ" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.395,1.926" FontSize="24" Cursor="Arrow" Height="42" Width="315" Margin="485,0,0,0"/>
+        <WrapPanel>
+            <Button x:Name="exit" Margin="10" Content="ВЫЙТИ" Background="#FFA500" HorizontalAlignment="Left" VerticalAlignment="Center" Height="48" Width="94" FontSize="20" Click="ExitByClick" Grid.Row="0" Cursor="Hand"/>
+            <Button x:Name="addEq" Content="ДОБАВИТЬ ОБОРУДОВАНИЕ"  Background="#00FA9A" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Grid.Row="0" Cursor="Hand" Click="AddEquipment"/>
+            <Button x:Name="edit" Content="🔄" Margin="10" Background="#FFA500" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="17" Grid.Row="0" Cursor="Hand" Click="editEquipment"/>
+
+        </WrapPanel>
+        <ListBox Name="equipmentList" Grid.Row="1" SelectionChanged="SelectElem" FontSize="22">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding InventoryNumber}" Margin="5"/>
+                        <TextBlock Text=" --- " Margin="5"/>
+                        <TextBlock Text="{Binding TitleEquipment}" Margin="5"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <WrapPanel x:Name="filter" Grid.Row="2" HorizontalAlignment="Center">
+            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <Label Content="Сортировать" FontSize="20"/>
+                <Button Content="⬆️" FontSize="20" x:Name="abs" Background="#FFA500" Margin="2" Padding="5" Click="SortABC"/>
+                <Button Content="⬇️" FontSize="20" x:Name="dbs" Background="#FFA500" Margin="2" Padding="5" Click="SortDCB"/>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Right" Margin="30,0,0,0" VerticalAlignment="Bottom">
+                <Label Content="Поиск" FontSize="20"/>
+                <TextBox x:Name="search" FontSize="20" Width="316"/>
+                <Button Content="🔍" FontSize="20" x:Name="searchBtn" Background="#00FA9A" Click="SearchList"/>
+            </WrapPanel>
+            <Button x:Name="back" Margin="30,0,0,0" Content="❌" FontSize="20" Background="#FFA500" HorizontalAlignment="Center" Click="sbrosEquipment"/>
+        </WrapPanel>
+    </Grid>
+</Page>
