@@ -100,7 +100,11 @@ namespace ScienceCenter.Windows
                         MessageBox.Show("Сохранение невозможно! Некорректное поле Описания оборудования!");
                         return;
                     }
-
+                    if (datePicker.SelectedDate == null)
+                    {
+                        newEquipment.DateTransferToCompanyBalance = DateOnly.FromDateTime(DateTime.Today);
+                        datePicker.SelectedDate = DateTime.Today;
+                    }
                     if (vs.Text.Trim() != null)
                     {
                         newEquipment.WeightInKg = double.Parse(vs.Text);
@@ -166,7 +170,7 @@ namespace ScienceCenter.Windows
 
         private void LiveCheck(object sender, TextCompositionEventArgs e)
         {
-            if (!int.TryParse(e.Text, out _))
+            if (!double.TryParse(e.Text, out _))
                 e.Handled = true;
         }
     }
