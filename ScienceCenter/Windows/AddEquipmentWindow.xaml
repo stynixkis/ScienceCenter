@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Icon="\Resources\icon.ico"
-        Title="Добавление оборудования" Height="650" Width="500">
+        Title="Добавление оборудования" Height="650" Width="600">
     <Grid>
         <WrapPanel Grid.Column="1" Orientation="Vertical">
             <Label Margin="30" Content="ПОДРОБНОСТИ ОБ ОБОРУДОВАНИИ" HorizontalAlignment="Right" VerticalAlignment="Top" RenderTransformOrigin="0.395,1.926" FontSize="22" Cursor="Arrow" Height="42" Width="425"/>
@@ -33,7 +33,7 @@
                 <TextBox x:Name="Invent" FontSize="18" HorizontalAlignment="Left" Width="144"/>
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">
-                <Label Content="Стандартная жизнь: " FontSize="18"/>
+                <Label Content="Предполагаемый срок использования: " FontSize="18"/>
                 <TextBox x:Name="AVG_Year" FontSize="18" HorizontalAlignment="Left" PreviewTextInput="LiveCheck" Width="161"/>
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">

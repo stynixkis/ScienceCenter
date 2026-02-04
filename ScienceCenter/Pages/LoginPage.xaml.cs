@@ -37,6 +37,7 @@ namespace ScienceCenter.Pages
 
             UserStatic.worker_id = users.IdWorker;
             UserStatic.role = role.TitlePost;
+            UserStatic.name = $"{worker.LastName} {worker.Name} {worker.Patronymic}";
 
             NavigationService.Navigate(new ListEquipmentPage());
         }

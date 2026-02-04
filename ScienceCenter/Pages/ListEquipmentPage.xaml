@@ -15,21 +15,38 @@
         </Grid.RowDefinitions>
 
 
-        <Label Content="СПИСОК ОБОРУДОВАНИЯ" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.395,1.926" FontSize="24" Cursor="Arrow" Height="42" Width="315" Margin="485,0,0,0"/>
+        <Label x:Name="fio" Content="ФИО" HorizontalAlignment="Right" VerticalAlignment="Center" RenderTransformOrigin="0.395,1.926" FontSize="20" Cursor="Arrow" Height="42" Width="Auto" Margin="400,0,0,0"/>
         <WrapPanel>
             <Button x:Name="exit" Margin="10" Content="ВЫЙТИ" Background="#FFA500" HorizontalAlignment="Left" VerticalAlignment="Center" Height="48" Width="94" FontSize="20" Click="ExitByClick" Grid.Row="0" Cursor="Hand"/>
             <Button x:Name="addEq" Content="ДОБАВИТЬ ОБОРУДОВАНИЕ"  Background="#00FA9A" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Grid.Row="0" Cursor="Hand" Click="AddEquipment"/>
-            <Button x:Name="edit" Content="🔄" Margin="10" Background="#FFA500" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="17" Grid.Row="0" Cursor="Hand" Click="editEquipment"/>
-
         </WrapPanel>
-        <ListBox Name="equipmentList" Grid.Row="1" SelectionChanged="SelectElem" FontSize="22">
+        <ListBox Grid.Row="1" x:Name="equipmentList" SelectionChanged="SelectElem"  BorderThickness="1" BorderBrush="LightGray" Background="White"  ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding InventoryNumber}" Margin="5"/>
-                        <TextBlock Text=" --- " Margin="5"/>
-                        <TextBlock Text="{Binding TitleEquipment}" Margin="5"/>
-                    </StackPanel>
+                    <Border Padding="10" Margin="0,10,0,10" Height="Auto" Width="750" BorderBrush="LightGray" HorizontalAlignment="Center" BorderThickness="1" CornerRadius="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Width="100" Height="100" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,5,0,0">
+                                <Image Source="{Binding BitmapImage}" Stretch="UniformToFill" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="15,0,0,0" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding TitleEquipment}" FontWeight="Bold" FontSize="16" Foreground="#2C3E50" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding Description}" Margin="0,5,0,0" FontSize="14" Foreground="#34495E" TextWrapping="Wrap" MaxWidth="450"/>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <TextBlock Text="Аудитория: " FontWeight="SemiBold" Foreground="#7F8C8D"/>
+                                    <TextBlock Text="{Binding AuditorNumber}" FontWeight="Medium" Foreground="#16A085" Margin="0,0,15,0"/>
+                                    <TextBlock Text="Подразделение: " FontWeight="SemiBold" Foreground="#7F8C8D"/>
+                                    <TextBlock Text="{Binding OfficeTitle}" FontWeight="Medium" Foreground="#215" TextWrapping="Wrap" Width="300"/>
+                                </WrapPanel>
+                                <Border Background="{Binding StatusColor}" Margin="0,10,0,0" CornerRadius="3" Padding="5,2" HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding StatusText}"  FontSize="12" FontWeight="SemiBold"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -42,10 +59,9 @@
             </WrapPanel>
             <WrapPanel HorizontalAlignment="Right" Margin="30,0,0,0" VerticalAlignment="Bottom">
                 <Label Content="Поиск" FontSize="20"/>
-                <TextBox x:Name="search" FontSize="20" Width="316"/>
-                <Button Content="🔍" FontSize="20" x:Name="searchBtn" Background="#00FA9A" Click="SearchList"/>
+                <TextBox x:Name="search" FontSize="20" Width="316" TextChanged="Search_TextChanged"/>
             </WrapPanel>
-            <Button x:Name="back" Margin="30,0,0,0" Content="❌" FontSize="20" Background="#FFA500" HorizontalAlignment="Center" Click="sbrosEquipment"/>
+            <Button x:Name="back" Margin="30,0,0,0" Content="❌" FontSize="20" Background="#FFA500" HorizontalAlignment="Center" Click="SbrosEquipment"/>
         </WrapPanel>
     </Grid>
 </Page>

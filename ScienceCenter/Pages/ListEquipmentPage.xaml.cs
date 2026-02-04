@@ -1,9 +1,13 @@
 ﻿using ScienceCenter.Models;
 using ScienceCenter.Models.DataModels;
 using ScienceCenter.Windows;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
 namespace ScienceCenter.Pages
@@ -20,16 +24,21 @@ namespace ScienceCenter.Pages
             LoadData();
         }
 
-        private void LoadData()
+        public void LoadData()
         {
             DataContext = this;
             if (UserStatic.role == "гость")
             {
-                equipmentList.ItemsSource = _context.Equipment.Where(p => p.IdWorker == null && p.IdOffices == null).ToList();
+                var listAboutGostLong = _context.Equipment.Where(p => p.IdWorker == null && p.IdOffices == null && (p.IdAudience == null || p.IdAudience == (_context.Audiences.Where(x =>  x.NumberAudience == "склад").Select(x => x.IdAudience).FirstOrDefault()))).ToList();
+                
+                equipmentList.ItemsSource = (System.Collections.IEnumerable)LoadListEquipment(listAboutGostLong);
+                fio.Content = string.Empty;
             }
             if (UserStatic.role == "администратор бд" || UserStatic.role == "инженер")
             {
-                equipmentList.ItemsSource = _context.Equipment.ToList();
+                var listAboutGostLong = _context.Equipment.ToList();
+                equipmentList.ItemsSource = (System.Collections.IEnumerable)LoadListEquipment(listAboutGostLong);
+                fio.Content = UserStatic.name;
             }
             if (UserStatic.role == "лаборант" || UserStatic.role == "техник" || UserStatic.role == "заведующий лабораторией")
             {
@@ -39,9 +48,11 @@ namespace ScienceCenter.Pages
                         .Select(p => p.IdWorker)
                         .ToList();
 
-                equipmentList.ItemsSource = _context.Equipment
+                var listAboutGostLong = _context.Equipment
                     .Where(p => workerIdsInOffice.Contains((int)p.IdWorker) || p.IdOffices == usersLab)
                     .ToList();
+                equipmentList.ItemsSource = (System.Collections.IEnumerable)LoadListEquipment(listAboutGostLong);
+                fio.Content = UserStatic.name;
             }
 
             if (UserStatic.role == "администратор бд" || UserStatic.role == "заведующий лабораторией")
@@ -86,32 +97,20 @@ namespace ScienceCenter.Pages
 
         private void AddEquipment(object sender, RoutedEventArgs e)
         {
-            AddEquipmentWindow window = new AddEquipmentWindow();
+            AddEquipmentWindow window = new AddEquipmentWindow(this);
             window.Show();
         }
 
-        private void editEquipment(object sender, RoutedEventArgs e)
+        private void EditEquipment(object sender, RoutedEventArgs e)
         {
             LoadData();
             search.Text = string.Empty;
             MessageBox.Show("Данные обновлены успешно!");
         }
-        private void sbrosEquipment(object sender, RoutedEventArgs e)
+        private void SbrosEquipment(object sender, RoutedEventArgs e)
         {
             LoadData();
             search.Text = string.Empty;
-        }
-
-        private void SearchList(object sender, RoutedEventArgs e)
-        {
-            if (search.Text.Trim().Length == 0)
-            {
-                LoadData();
-                return;
-            }
-            LoadData();
-            var list = new List<Equipment>((IEnumerable<Equipment>)equipmentList.ItemsSource);
-            equipmentList.ItemsSource = list.Where(p => p.TitleEquipment.ToLower().Contains(search.Text.ToLower())).ToList();
         }
 
         private void SortABC(object sender, RoutedEventArgs e)
@@ -125,5 +124,139 @@ namespace ScienceCenter.Pages
             var list = new List<Equipment>((IEnumerable<Equipment>)equipmentList.ItemsSource);
             equipmentList.ItemsSource = list.OrderByDescending(p => p.TitleEquipment).ToList();
         }
+
+        private void Search_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (search.Text.Trim().Length == 0)
+            {
+                LoadData();
+                return;
+            }
+            LoadData();
+            var list = new List<Equipment>((IEnumerable<Equipment>)equipmentList.ItemsSource);
+            equipmentList.ItemsSource = list.Where(p => p.TitleEquipment.ToLower().Contains(search.Text.ToLower()) 
+            || p.InventoryNumber.ToLower().Contains(search.Text.ToLower()) 
+            || p.Description.ToLower().Contains(search.Text.ToLower())).ToList();
+        }
+        private System.Windows.Media.Imaging.BitmapImage LoadStubImage()
+        {
+            try
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+
+                string stubPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "stub.jpg");
+                if (File.Exists(stubPath))
+                {
+                    bitmap.UriSource = new Uri(stubPath, UriKind.Absolute);
+                }
+                else
+                {
+                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/stub.jpg");
+                }
+
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch
+            {
+                return  null;
+            }
+        }
+
+        private List<BrieflyAboutEquipment> LoadListEquipment(List<Equipment> listAboutGostLong)
+        {
+            List<BrieflyAboutEquipment> listAboutGostBriefly = new List<BrieflyAboutEquipment>();
+
+            foreach (var eq in listAboutGostLong)
+            {
+                var briefItem = new BrieflyAboutEquipment(eq);
+
+                if (eq.Photo != null)
+                {
+                    string projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+                    string resourcesPath = Path.Combine(projectRoot, "Resources");
+                    string photoPath = Path.Combine(resourcesPath, eq.Photo);
+
+                    if (File.Exists(photoPath))
+                    {
+                        try
+                        {
+                            BitmapImage bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.UriSource = new Uri(photoPath, UriKind.Absolute);
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            briefItem.BitmapImage = bitmap;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка загрузки изображения: {ex.Message}");
+                            briefItem.BitmapImage = LoadStubImage();
+                        }
+                    }
+                    else
+                    {
+                        briefItem.BitmapImage = LoadStubImage();
+                    }
+                }
+                else
+                {
+                    briefItem.BitmapImage = LoadStubImage();
+                }
+
+                var audience = _context.Audiences.FirstOrDefault(a => a.IdAudience == eq.IdAudience);
+                if (audience != null)
+                {
+                    briefItem.AuditorNumber = audience.NumberAudience;
+                }
+                else
+                {
+                    briefItem.AuditorNumber = "Не указана";
+                }
+
+                var officeAudience = _context.OfficesAudiences.FirstOrDefault(oa => oa.IdAudience == eq.IdAudience);
+                if (officeAudience != null)
+                {
+                    var office = _context.Offices.FirstOrDefault(o => o.IdOffice == officeAudience.IdOffice);
+                    if (office != null)
+                    {
+                        briefItem.OfficeTitle = office.FullTitle;
+                    }
+                    else
+                    {
+                        briefItem.OfficeTitle = "Не указано";
+                    }
+                }
+                else
+                {
+                    briefItem.OfficeTitle = "Не указано";
+                }
+
+                var date = (eq.DateTransferToCompanyBalance.ToDateTime(TimeOnly.MinValue)).AddYears(eq.StandardServiceLife);
+
+                if (date.Year == DateTime.Now.Year)
+                {
+                    briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#FFA500");
+                    briefItem.StatusText = "СРОК СЛУЖБЫ ИСТЕКАЕТ В ТЕКУЩЕМ ГОДУ";
+                }
+                else if (date < DateTime.Now)
+                {
+                    briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#E32636");
+                    briefItem.StatusText = "НА СПИСАНИЕ";
+                }
+                else
+                {
+                    briefItem.StatusColor = base.Background;
+                    briefItem.StatusText = $"СРОК СЛУЖБЫ ДО: {date.ToString("dd. MM. yyyy г.")}";
+                }
+
+                listAboutGostBriefly.Add(briefItem);
+            }
+
+            return listAboutGostBriefly;
+        }
+
     }
 }

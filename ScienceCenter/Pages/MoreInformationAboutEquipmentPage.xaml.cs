@@ -1,4 +1,5 @@
-﻿using ScienceCenter.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ScienceCenter.Models;
 using ScienceCenter.Models.DataModels;
 using System.IO;
 using System.Windows;
@@ -103,18 +104,40 @@ namespace ScienceCenter.Pages
 
             if (itemSelect.IdAudience != null)
             {
-                PlaceShort.Content = "Аудитория: " + itemSelect.IdAudience;
+                var audience = _context.Audiences
+                    .FirstOrDefault(a => a.IdAudience == itemSelect.IdAudience);
+                PlaceShort.Content = "Аудитория: " + (audience?.NumberAudience ?? "Не указана");
+            }
+            else
+            {
+                PlaceShort.Content = "Аудитория: Не указана";
             }
 
             if (itemSelect.IdWorker != null)
             {
-                var audit = _context.Workers.Where(p => p.IdWorker == itemSelect.IdWorker).Select(p => p.IdOffices).FirstOrDefault();
-                OfficeShort.Content = "Подразделение: " + audit;
-            }
+                var worker = _context.Workers
+                    .Include(w => w.IdOfficesNavigation)
+                    .FirstOrDefault(p => p.IdWorker == itemSelect.IdWorker);
 
-            if (itemSelect.IdOffices != null)
+                if (worker?.IdOfficesNavigation != null)
+                {
+                    OfficeShort.Content = "Подразделение: " + worker.IdOfficesNavigation.FullTitle;
+                }
+                else
+                {
+                    OfficeShort.Content = "Подразделение: Не указано";
+                }
+            }
+            else if (itemSelect.IdOffices != null)
             {
-                OfficeShort.Content = "Подразделение: " + itemSelect.IdOffices;
+                var office = _context.Offices
+                    .FirstOrDefault(p => p.IdOffice == itemSelect.IdOffices);
+
+                OfficeShort.Content = "Подразделение: " + (office?.FullTitle ?? "Не указано");
+            }
+            else
+            {
+                OfficeShort.Content = "Подразделение: Не указано";
             }
         }
 
@@ -233,19 +256,22 @@ namespace ScienceCenter.Pages
                         return;
                     }
 
-                    MessageBox.Show(itemSelect.IdAudience + " --- " + itemSelect.IdOffices + "\\" + itemSelect.IdWorker);
-
                     var existingItem = _context.Equipment.Find(itemSelect.IdEquipment);
-                    if (existingItem != null)
+
+                    if (existingItem == null)
                     {
-                        existingItem.TitleEquipment = itemSelect.TitleEquipment;
-                        existingItem.Description = itemSelect.Description;
-                        existingItem.IdWorker = itemSelect.IdWorker;
-                        existingItem.IdAudience = itemSelect.IdAudience;
-                        existingItem.IdOffices = itemSelect.IdOffices;
-                        _context.SaveChanges();
-                        MessageBox.Show("Редактирование успешно!");
+                        MessageBox.Show("Запись не найдена в базе данных!");
+                        return;
                     }
+
+                    existingItem.TitleEquipment = NameLong.Text.Trim();
+                    existingItem.Description = DescriptionLong.Text.Trim();
+                    existingItem.IdAudience = itemSelect.IdAudience;
+                    existingItem.IdOffices = itemSelect.IdOffices;
+                    existingItem.IdWorker = itemSelect.IdWorker;
+
+                    _context.SaveChanges();
+                    MessageBox.Show("Редактирование успешно!");
                 }
                 catch (Exception ex)
                 {
