@@ -234,24 +234,30 @@ namespace ScienceCenter.Pages
                     briefItem.OfficeTitle = "Не указано";
                 }
 
-                var date = (eq.DateTransferToCompanyBalance.ToDateTime(TimeOnly.MinValue)).AddYears(eq.StandardServiceLife);
-
-                if (date.Year == DateTime.Now.Year)
+                if (UserStatic.role == "гость" || UserStatic.role == "лаборант" || UserStatic.role == "техник" || UserStatic.role == "инженер")
                 {
-                    briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#FFA500");
-                    briefItem.StatusText = "СРОК СЛУЖБЫ ИСТЕКАЕТ В ТЕКУЩЕМ ГОДУ";
-                }
-                else if (date < DateTime.Now)
-                {
-                    briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#E32636");
-                    briefItem.StatusText = "НА СПИСАНИЕ";
+                    briefItem.StatusText = string.Empty;
                 }
                 else
                 {
-                    briefItem.StatusColor = base.Background;
-                    briefItem.StatusText = $"СРОК СЛУЖБЫ ДО: {date.ToString("dd. MM. yyyy г.")}";
-                }
+                    var date = (eq.DateTransferToCompanyBalance.ToDateTime(TimeOnly.MinValue)).AddYears(eq.StandardServiceLife);
 
+                    if (date.Year == DateTime.Now.Year)
+                    {
+                        briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#FFA500");
+                        briefItem.StatusText = "СРОК СЛУЖБЫ ИСТЕКАЕТ В ТЕКУЩЕМ ГОДУ";
+                    }
+                    else if (date < DateTime.Now)
+                    {
+                        briefItem.StatusColor = (Brush)new BrushConverter().ConvertFrom("#E32636");
+                        briefItem.StatusText = "НА СПИСАНИЕ";
+                    }
+                    else
+                    {
+                        briefItem.StatusColor = base.Background;
+                        briefItem.StatusText = $"СРОК СЛУЖБЫ ДО: {date.ToString("dd. MM. yyyy г.")}";
+                    }
+                }
                 listAboutGostBriefly.Add(briefItem);
             }
 
