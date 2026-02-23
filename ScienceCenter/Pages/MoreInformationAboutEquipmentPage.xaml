@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ScienceCenter.Pages"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MoreInformationAboutEquipmentPage">
@@ -22,35 +23,58 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="Image" Grid.Column="0"/>
+            <WrapPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center">
+                <Image x:Name="Image" MaxHeight="200" MaxWidth="300"/>
+                <Button x:Name="editButn" Margin="10" FontSize="14" Content="РЕДАКТИРОВАТЬ ФОТО" Background="#00FA9A" Cursor="" Click="EditButn_Click" />
+            </WrapPanel>
 
             <WrapPanel Grid.Column="1" x:Name="fromShortUser" Orientation="Vertical">
                 <Label x:Name="NameShort" FontSize="20" HorizontalAlignment="Center"/>
                 <Label x:Name="DescriptionShort" FontSize="18" HorizontalAlignment="Left"/>
+                <Label x:Name="vsShort" FontSize="18" HorizontalAlignment="Left"/>
+                <Label x:Name="dateShort" FontSize="18" HorizontalAlignment="Left"/>
+                <Label x:Name="inventShort" FontSize="18" HorizontalAlignment="Left"/>
+                <Label x:Name="standartShort" FontSize="18" HorizontalAlignment="Left"/>
+
                 <Label x:Name="PlaceShort" FontSize="18" HorizontalAlignment="Left"/>
                 <Label x:Name="OfficeShort" FontSize="18" HorizontalAlignment="Left"/>
             </WrapPanel>
 
             <WrapPanel Grid.Column="1" x:Name="fromLongUser" Orientation="Vertical">
-                <TextBox Margin="10" x:Name="NameLong" FontSize="20" HorizontalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                <TextBox Margin="5" x:Name="NameLong" FontSize="18" HorizontalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}"/>
                 <WrapPanel>
-                    <Label Content="Описание: " FontSize="18"/>
-                    <TextBox x:Name="DescriptionLong" FontSize="18" HorizontalAlignment="Left" BorderBrush="{x:Null}"/>
+                    <Label Content="Описание: " FontSize="14"/>
+                    <TextBox x:Name="DescriptionLong" FontSize="14" HorizontalAlignment="Left" BorderBrush="{x:Null}"/>
+                </WrapPanel>
+                <WrapPanel  Margin="0,5,0,0">
+                    <Label Content="Вес, в кг: " FontSize="14"/>
+                    <TextBox  x:Name="vs" FontSize="14" HorizontalAlignment="Left" Background="{x:Null}"  PreviewTextInput="LiveCheckFromDouble" Width="154" />
+                </WrapPanel>
+                <WrapPanel  Margin="0,5,0,0">
+                    <Label Content="Дата постановки на баланс: " FontSize="14"/>
+                    <TextBox Name="datePicker" FontSize="14" IsReadOnly="True" HorizontalAlignment="Left" Width="83"/>
+                </WrapPanel>
+                <WrapPanel  Margin="0,5,0,0">
+                    <Label Content="Инвентарный номер: " FontSize="14"/>
+                    <TextBox x:Name="Invent" FontSize="14" IsReadOnly="True" HorizontalAlignment="Left" Width="144"/>
+                </WrapPanel>
+                <WrapPanel  Margin="0,5,0,0">
+                    <Label Content="Предполагаемый срок использования: " FontSize="14"/>
+                    <TextBox x:Name="AVG_Year" FontSize="14" HorizontalAlignment="Left" PreviewTextInput="LiveCheckFromInt" Width="121"/>
                 </WrapPanel>
                 <WrapPanel Orientation="Horizontal">
-                    <Label Content="Аудитория" FontSize="18"/>
+                    <Label Content="Аудитория" FontSize="14"/>
                     <ComboBox x:Name="PlaceLong" FontSize="14" SelectionChanged="PlaceLong_SelectionChanged" />
                 </WrapPanel>
                 <WrapPanel Orientation="Horizontal">
-                    <Label Content="Подразделение" FontSize="18"/>
-                    <ComboBox x:Name="OfficeLong" FontSize="18" SelectionChanged="OfficeLong_SelectionChanged"/>
+                    <Label Content="Подразделение" FontSize="14"/>
+                    <ComboBox x:Name="OfficeLong" FontSize="14" SelectionChanged="OfficeLong_SelectionChanged"/>
                 </WrapPanel>
-                <Button x:Name="statusLong" Margin="30" HorizontalAlignment="Center" FontSize="20" Background="{x:Null}" Cursor="Arrow" />
-
-                <StackPanel Orientation="Horizontal" >
-                    <Button x:Name="editLong" Margin="10" Content="РЕДАКТИРОВАТЬ" HorizontalAlignment="Left" FontSize="18" Background="#00FA9A" Click="EditSave"/>
-                    <Button x:Name="deliteLong" Content="УДАЛИТЬ" Margin="10" HorizontalAlignment="Left" FontSize="18" Background="#FFA500" Click="DeleteSave"/>
-                </StackPanel>
+                <Button x:Name="statusLong" HorizontalAlignment="Left" FontSize="18" Background="{x:Null}" Cursor="Arrow" />
+                <WrapPanel Orientation="Horizontal" >
+                    <Button x:Name="editLong" Margin="10" Content="РЕДАКТИРОВАТЬ" HorizontalAlignment="Left" FontSize="16" Background="#00FA9A" Click="EditSave"/>
+                    <Button x:Name="deliteLong" Content="УДАЛИТЬ" Margin="10" HorizontalAlignment="Left" FontSize="16" Background="#FFA500" Click="DeleteSave"/>
+                </WrapPanel>
             </WrapPanel>
         </Grid>
     </Grid>

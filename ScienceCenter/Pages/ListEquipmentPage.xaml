@@ -57,9 +57,14 @@
                 <Button Content="⬆️" FontSize="20" x:Name="abs" Background="#FFA500" Margin="2" Padding="5" Click="SortABC"/>
                 <Button Content="⬇️" FontSize="20" x:Name="dbs" Background="#FFA500" Margin="2" Padding="5" Click="SortDCB"/>
             </WrapPanel>
+            <WrapPanel Orientation="Horizontal" Margin="30,0,0,0">
+                <Label Content="Фильтр" FontSize="20"/>
+                <ComboBox x:Name="OfficeBox" FontSize="18" SelectionChanged="OfficeBox_SelectionChanged"/>
+            </WrapPanel>
+
             <WrapPanel HorizontalAlignment="Right" Margin="30,0,0,0" VerticalAlignment="Bottom">
                 <Label Content="Поиск" FontSize="20"/>
-                <TextBox x:Name="search" FontSize="20" Width="316" TextChanged="Search_TextChanged"/>
+                <TextBox x:Name="search" FontSize="20" Width="162" TextChanged="Search_TextChanged"/>
             </WrapPanel>
             <Button x:Name="back" Margin="30,0,0,0" Content="❌" FontSize="20" Background="#FFA500" HorizontalAlignment="Center" Click="SbrosEquipment"/>
         </WrapPanel>

@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Icon="\Resources\icon.ico"
-        Title="Добавление оборудования" Height="650" Width="600">
+        Title="Добавление оборудования" Height="850" Width="800">
     <Grid>
         <WrapPanel Grid.Column="1" Orientation="Vertical">
             <Label Margin="30" Content="ПОДРОБНОСТИ ОБ ОБОРУДОВАНИИ" HorizontalAlignment="Right" VerticalAlignment="Top" RenderTransformOrigin="0.395,1.926" FontSize="22" Cursor="Arrow" Height="42" Width="425"/>
@@ -18,7 +18,7 @@
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">
                 <Label Content="Вес, в кг: " FontSize="18"/>
-                <TextBox  x:Name="vs" FontSize="18" HorizontalAlignment="Left" Background="{x:Null}"  PreviewTextInput="LiveCheck" Width="154" />
+                <TextBox  x:Name="vs" FontSize="18" HorizontalAlignment="Left" Background="{x:Null}"  PreviewTextInput="LiveCheckFromDouble" Width="154" />
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">
                 <Label Content="Дата постановки на баланс: " FontSize="18"/>
@@ -34,7 +34,7 @@
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">
                 <Label Content="Предполагаемый срок использования: " FontSize="18"/>
-                <TextBox x:Name="AVG_Year" FontSize="18" HorizontalAlignment="Left" PreviewTextInput="LiveCheck" Width="161"/>
+                <TextBox x:Name="AVG_Year" FontSize="18" HorizontalAlignment="Left" PreviewTextInput="LiveCheckFromInt" Width="161"/>
             </WrapPanel>
             <WrapPanel  Margin="0,10,0,0">
                 <Label Content="Описание: " FontSize="18"/>
@@ -48,7 +48,11 @@
                 <Label Content="Подразделение" FontSize="18"/>
                 <ComboBox x:Name="Office" FontSize="18" SelectionChanged="OfficeLong_SelectionChanged"/>
             </WrapPanel>
-
+            <WrapPanel Grid.Column="0" Orientation="Vertical" Margin="0,10,0,0">
+                <Image x:Name="Image" MaxHeight="100" MaxWidth="200"/>
+                <Button x:Name="saveButn" Margin="10" FontSize="18" Content="ДОБАВИТЬ ФОТО" Background="#00FA9A" Cursor="" Click="SaveButn_Click" />
+                <Button x:Name="delButn" Margin="10" FontSize="18" Content="УБРАТЬ ФОТО" Background="#FFA500" Cursor="" Click="DeleteButn_Click" />
+            </WrapPanel>
             <StackPanel Orientation="Horizontal"  Margin="0,10,0,0">
                 <Button x:Name="save" Margin="10" Content="СОХРАНИТЬ" HorizontalAlignment="Left" FontSize="18" Background="#00FA9A" Click="Save"/>
             </StackPanel>
