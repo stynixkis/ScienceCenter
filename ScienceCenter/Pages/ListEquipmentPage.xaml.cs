@@ -17,7 +17,7 @@ namespace ScienceCenter.Pages
     /// </summary>
     public partial class ListEquipmentPage : Page
     {
-        private ScientificResearchInstituteContext _context = new ScientificResearchInstituteContext();
+        private ScientificResearchInstituteContext _context;
 
         /// <summary>
         /// Конструктор страницы списка оборудования
@@ -25,8 +25,22 @@ namespace ScienceCenter.Pages
         public ListEquipmentPage()
         {
             InitializeComponent();
-            //загрузить данные при создании страницы
-            LoadData();
+
+            try
+            {
+                //создавать контекст ТОЛЬКО внутри try
+                _context = new ScientificResearchInstituteContext();
+
+                //загрузить данные
+                LoadData();
+            }
+            catch (Exception)
+            {
+                //при ошибке подключения к БД показать пустой список
+                equipmentList.ItemsSource = new List<BrieflyAboutEquipment>();
+                filter.Visibility = Visibility.Collapsed;
+                addEq.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -39,19 +53,11 @@ namespace ScienceCenter.Pages
             //загрузить данные для гостя
             if (UserStatic.role == "гость")
             {
-                try
-                {
-                    //показать только оборудование без ответственных и на складе
-                    var listAboutGostLong = _context.Equipment.Where(p => p.IdWorker == null && p.IdOffices == null && (p.IdAudience == null || p.IdAudience == (_context.Audiences.Where(x => x.NumberAudience == "склад").Select(x => x.IdAudience).FirstOrDefault()))).ToList();
+                //показать только оборудование без ответственных и на складе
+                var listAboutGostLong = _context.Equipment.Where(p => p.IdWorker == null && p.IdOffices == null && (p.IdAudience == null || p.IdAudience == (_context.Audiences.Where(x => x.NumberAudience == "склад").Select(x => x.IdAudience).FirstOrDefault()))).ToList();
 
-                    equipmentList.ItemsSource = LoadListEquipment(listAboutGostLong);
-                    fio.Content = string.Empty;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка подключения к базе данных");
-                    return;
-                }
+                equipmentList.ItemsSource = LoadListEquipment(listAboutGostLong);
+                fio.Content = string.Empty;
             }
 
             //загрузить данные для администратора и инженера
