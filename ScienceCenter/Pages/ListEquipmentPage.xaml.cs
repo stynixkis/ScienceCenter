@@ -36,10 +36,17 @@ namespace ScienceCenter.Pages
             }
             catch (Exception)
             {
-                //при ошибке подключения к БД показать пустой список
-                equipmentList.ItemsSource = new List<BrieflyAboutEquipment>();
-                filter.Visibility = Visibility.Collapsed;
-                addEq.Visibility = Visibility.Collapsed;
+                if (UserStatic.role == "гость")
+                {
+                    equipmentList.ItemsSource = new List<BrieflyAboutEquipment>();
+                    filter.Visibility = Visibility.Collapsed;
+                    addEq.Visibility = Visibility.Collapsed;
+                    fio.Content = "ГОСТЬ";
+                }
+                else
+                {
+                    MessageBox.Show("!!!!!!!!!! ОШИБКА ПОДКЛЮЧЕНИЯ К БД !!!!!!!!!!!");
+                }
             }
         }
 
@@ -57,7 +64,7 @@ namespace ScienceCenter.Pages
                 var listAboutGostLong = _context.Equipment.Where(p => p.IdWorker == null && p.IdOffices == null && (p.IdAudience == null || p.IdAudience == (_context.Audiences.Where(x => x.NumberAudience == "склад").Select(x => x.IdAudience).FirstOrDefault()))).ToList();
 
                 equipmentList.ItemsSource = LoadListEquipment(listAboutGostLong);
-                fio.Content = string.Empty;
+                fio.Content = "ГОСТЬ";
             }
 
             //загрузить данные для администратора и инженера

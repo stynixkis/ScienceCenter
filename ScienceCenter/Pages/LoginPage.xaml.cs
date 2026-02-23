@@ -59,9 +59,7 @@ namespace ScienceCenter.Pages
             }
             catch
             {
-                //при ошибке подключения к БД войти как гость
-                UserStatic.role = "гость";
-                NavigationService.Navigate(new ListEquipmentPage());
+                MessageBox.Show("!!!!!!!!!! ОШИБКА ПОДКЛЮЧЕНИЯ К БД !!!!!!!!!!!");
             }
         }
 
