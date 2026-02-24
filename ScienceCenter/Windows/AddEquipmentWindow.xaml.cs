@@ -117,103 +117,259 @@ namespace ScienceCenter.Windows
         {
             //запросить подтверждение сохранения
             MessageBoxResult result = MessageBox.Show("Вы точно хотите сохранить изменения?", "СОХРАНЕНИЕ", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            //очистить предыдущие сообщения об ошибках
+            ClearErrorMessages();
+
+            //флаг наличия ошибок
+            bool hasErrors = false;
+
+            try
             {
-                try
+                //валидация названия
+                if (string.IsNullOrWhiteSpace(Name.Text))
                 {
-                    //проверить и сохранить название
-                    if (Name.Text.Trim() != null)
+                    ShowError("Название оборудования не может быть пустым!", Name);
+                    hasErrors = true;
+                }
+                else if (Name.Text.Length < 3)
+                {
+                    ShowError("Название должно содержать минимум 3 символа!", Name);
+                    hasErrors = true;
+                }
+                else if (Name.Text.Length > 100)
+                {
+                    ShowError("Название не может превышать 100 символов!", Name);
+                    hasErrors = true;
+                }
+                else
+                {
+                    newEquipment.TitleEquipment = Name.Text.Trim();
+                }
+
+                //валидация описания
+                if (string.IsNullOrWhiteSpace(Description.Text))
+                {
+                    ShowError("Описание не может быть пустым!", Description);
+                    hasErrors = true;
+                }
+                else if (Description.Text.Length < 5)
+                {
+                    ShowError("Описание должно содержать минимум 5 символов!", Description);
+                    hasErrors = true;
+                }
+                else if (Description.Text.Length > 500)
+                {
+                    ShowError("Описание не может превышать 500 символов!", Description);
+                    hasErrors = true;
+                }
+                else
+                {
+                    newEquipment.Description = Description.Text.Trim();
+                }
+
+                //валидация даты
+                if (datePicker.SelectedDate == null)
+                {
+                    //если дата не выбрана, ставим сегодня
+                    newEquipment.DateTransferToCompanyBalance = DateOnly.FromDateTime(DateTime.Today);
+                    datePicker.SelectedDate = DateTime.Today;
+                }
+                else if (datePicker.SelectedDate > DateTime.Today)
+                {
+                    ShowError("Дата постановки на учет не может быть в будущем!", datePicker);
+                    hasErrors = true;
+                }
+                else if (datePicker.SelectedDate < new DateTime(2000, 1, 1))
+                {
+                    ShowError("Дата постановки на учет не может быть раньше 2000 года!", datePicker);
+                    hasErrors = true;
+                }
+                else
+                {
+                    newEquipment.DateTransferToCompanyBalance = DateOnly.FromDateTime(datePicker.SelectedDate.Value);
+                }
+
+                //валидация веса
+                if (string.IsNullOrWhiteSpace(vs.Text))
+                {
+                    ShowError("Вес не может быть пустым!", vs);
+                    hasErrors = true;
+                }
+                else
+                {
+                    if (!double.TryParse(vs.Text, out double weight))
                     {
-                        newEquipment.TitleEquipment = Name.Text;
+                        ShowError("Вес должен быть числом!", vs);
+                        hasErrors = true;
+                    }
+                    else if (weight <= 0)
+                    {
+                        ShowError("Вес должен быть положительным числом!", vs);
+                        hasErrors = true;
+                    }
+                    else if (weight > 10000)
+                    {
+                        ShowError("Вес не может превышать 10000 кг!", vs);
+                        hasErrors = true;
                     }
                     else
                     {
-                        MessageBox.Show("Сохранение невозможно! Некорректное поле Названия оборудования!");
-                        return;
+                        newEquipment.WeightInKg = weight;
                     }
+                }
 
-                    //проверить и сохранить описание
-                    if (Description.Text.Trim() != null)
+                //валидация инвентарного номера
+                if (string.IsNullOrWhiteSpace(Invent.Text))
+                {
+                    ShowError("Инвентарный номер не может быть пустым!", Invent);
+                    hasErrors = true;
+                }
+                else
+                {
+                    string inv = Invent.Text.Trim();
+
+                    //проверка уникальности инвентарного номера
+                    if (_context.Equipment.Any(e => e.InventoryNumber == inv && e.IdEquipment != newEquipment.IdEquipment))
                     {
-                        newEquipment.Description = Description.Text;
+                        ShowError("Оборудование с таким инвентарным номером уже существует!", Invent);
+                        hasErrors = true;
                     }
                     else
                     {
-                        MessageBox.Show("Сохранение невозможно! Некорректное поле Описания оборудования!");
-                        return;
+                        newEquipment.InventoryNumber = inv;
                     }
+                }
 
-                    //проверить и сохранить дату
-                    if (datePicker.SelectedDate == null)
+                //валидация срока службы
+                if (string.IsNullOrWhiteSpace(AVG_Year.Text))
+                {
+                    ShowError("Срок службы не может быть пустым!", AVG_Year);
+                    hasErrors = true;
+                }
+                else
+                {
+                    if (!int.TryParse(AVG_Year.Text, out int years))
                     {
-                        newEquipment.DateTransferToCompanyBalance = DateOnly.FromDateTime(DateTime.Today);
-                        datePicker.SelectedDate = DateTime.Today;
+                        ShowError("Срок службы должен быть целым числом!", AVG_Year);
+                        hasErrors = true;
                     }
-
-                    //проверить и сохранить вес
-                    if (vs.Text.Trim() != null)
+                    else if (years <= 0)
                     {
-                        newEquipment.WeightInKg = double.Parse(vs.Text);
+                        ShowError("Срок службы должен быть положительным числом!", AVG_Year);
+                        hasErrors = true;
+                    }
+                    else if (years > 100)
+                    {
+                        ShowError("Срок службы не может превышать 100 лет!", AVG_Year);
+                        hasErrors = true;
                     }
                     else
                     {
-                        MessageBox.Show("Сохранение невозможно! Некорректное поле Вес, в кг оборудования!");
-                        return;
+                        newEquipment.StandardServiceLife = years;
                     }
+                }
 
-                    //проверить и сохранить инвентарный номер
-                    if (Invent.Text.Trim() != null)
+                //валидация подразделения
+                if (Office.SelectedItem != null)
+                {
+                    string selectedOffice = Office.SelectedItem.ToString();
+                    if (!string.IsNullOrEmpty(selectedOffice))
                     {
-                        newEquipment.InventoryNumber = Invent.Text;
+                        var office = _context.Offices.FirstOrDefault(o => o.FullTitle == selectedOffice);
+                        if (office != null)
+                        {
+                            newEquipment.IdOffices = office.IdOffice;
+                            newEquipment.IdWorker = UserStatic.worker_id; //или найти ответственного
+                        }
                     }
                     else
-                    {
-                        MessageBox.Show("Сохранение невозможно! Некорректное поле Инвентарный номер оборудования!");
-                        return;
-                    }
-
-                    //проверить и сохранить срок службы
-                    if (AVG_Year.Text.Trim() != null)
-                    {
-                        newEquipment.StandardServiceLife = int.Parse(AVG_Year.Text);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Сохранение невозможно! Некорректное поле Стандартная жизнь оборудования!");
-                        return;
-                    }
-
-                    //обработать пустые значения подразделения и аудитории
-                    if (Office.SelectedItem == null)
                     {
                         newEquipment.IdOffices = null;
                         newEquipment.IdWorker = null;
                     }
-
-                    if (Place.SelectedItem == null)
-                        newEquipment.IdAudience = null;
-
-                    //добавить запись в базу данных
-                    _context.Add(newEquipment);
-                    _context.SaveChanges();
-
-                    MessageBox.Show("Сохранение успешно!");
-
-                    //обновить список оборудования на странице
-                    NewList.LoadData();
-
-                    //закрыть окно
-                    this.Close();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Ошибка: {ex}");
+                    newEquipment.IdOffices = null;
+                    newEquipment.IdWorker = null;
+                }
+
+                //валидация аудитории
+                if (Place.SelectedItem != null)
+                {
+                    string selectedPlace = Place.SelectedItem.ToString();
+                    if (!string.IsNullOrEmpty(selectedPlace))
+                    {
+                        var audience = _context.Audiences.FirstOrDefault(a => a.NumberAudience == selectedPlace);
+                        if (audience != null)
+                        {
+                            newEquipment.IdAudience = audience.IdAudience;
+                        }
+                    }
+                    else
+                    {
+                        newEquipment.IdAudience = null;
+                    }
+                }
+                else
+                {
+                    newEquipment.IdAudience = null;
+                }
+
+                //если есть ошибки - не сохраняем
+                if (hasErrors)
+                {
+                    MessageBox.Show("Исправьте ошибки перед сохранением!", "Ошибка валидации",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+
+                //добавить запись в базу данных
+                _context.Add(newEquipment);
+                _context.SaveChanges();
+
+                MessageBox.Show("Сохранение успешно!", "Готово",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                //обновить список оборудования на странице
+                NewList?.LoadData();
+
+                //закрыть окно
+                this.Close();
             }
-            else
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        //вспомогательные методы для валидации
+        private void ShowError(string message, Control control)
+        {
+            //подсветить поле с ошибкой
+            control.BorderBrush = System.Windows.Media.Brushes.Red;
+            control.BorderThickness = new Thickness(2);
+            control.ToolTip = message;
+
+            //показать сообщение
+            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void ClearErrorMessages()
+        {
+            //очистить подсветку и подсказки у всех полей ввода
+            foreach (var control in new Control[] { Name, Description, vs, Invent, AVG_Year, datePicker, Office, Place })
+            {
+                if (control != null)
+                {
+                    control.BorderBrush = System.Windows.Media.Brushes.Gray;
+                    control.BorderThickness = new Thickness(1);
+                    control.ToolTip = null;
+                }
             }
         }
 
@@ -385,7 +541,7 @@ namespace ScienceCenter.Windows
                         }
                     }
 
-                    MessageBox.Show("Редактирование успешно!");
+                    MessageBox.Show("Добавление успешно!");
                 }
             }
             catch (Exception ex)
